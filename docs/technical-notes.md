@@ -1,0 +1,94 @@
+# Technical Notes
+
+## Database Schema
+
+### User
+
+- `id`
+- `email`
+- `profile_photo`
+
+### PaymentHistory
+
+- `id`
+- `user`
+- `amount`
+- `created_at`
+- `description`
+- `stripe_payment_intent_id`
+- `status`
+- `photo_test_id`
+
+### PhotoTest
+
+- `id`
+- `user`
+- `status`
+- `created_at`
+- `updated_at`
+- `min_age`
+- `max_age`
+
+### Photo
+
+- `id`
+- `photo_test`
+- `photo`
+
+### Voter
+
+- `id`
+- `name`
+- `age`
+- `weight`
+- `height`
+- `skin`
+- `eyes_color`
+- `hair_color`
+- `nationality`
+- `job`
+- `personality` — description text
+- `dating_goal`
+- `lifestyle`
+- `preference` — formal/informal photos, attention to smile/style/naturalness/trust/seriousness/safety
+
+### Vote
+
+- `id`
+- `voter`
+- `photo_test`
+- `photo`
+- `reason`
+
+### PhotoReport
+
+- `id`
+- `photo`
+- `rank`
+- `badge`
+- `lead_photo_reason` — will be filled if the photo is lead
+- `final_rank_description`
+- `vote_count`
+
+### PhotoTestReport
+
+- `id`
+- `photo_test`
+- `overal_description`
+- `first_rank_explaination`
+- `second_rank_explaination`
+- `third_rank_explaination`
+
+### NextSteps
+
+- `photo_test_report`
+- `text`
+
+## Stack
+
+- **Backend:** Supabase
+- **AI model:** OpenAI GPT
+- **Frontend:** Next.js
+- **Payment:** Stripe
+- **Email:** [Resend](https://resend.com/)
+- **Deploy:** supabase + vercel
