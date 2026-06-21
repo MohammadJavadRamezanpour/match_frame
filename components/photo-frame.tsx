@@ -46,35 +46,51 @@ export function PhotoFrame({ src, alt, size = 'lg', spotlight = true }: Props) {
         )}
       </div>
       {spotlight &&
-        ([
-          { top: 8, left: 8, bl: 0, br: 0, tr: 0, tl: s.corner, borders: ['L', 'T'] },
-          { top: 8, right: 8, tl: 0, bl: 0, br: 0, tr: s.corner, borders: ['R', 'T'] },
-          { bottom: 8, left: 8, tl: 0, tr: 0, br: 0, bl: s.corner, borders: ['L', 'B'] },
-          { bottom: 8, right: 8, tl: 0, tr: 0, bl: 0, br: s.corner, borders: ['R', 'B'] },
-        ] as const).map((b, i) => (
+        buildBrackets(s.corner).map((b, i) => (
           <span
             key={i}
             className="absolute"
             style={{
               width: s.bracket,
               height: s.bracket,
-              top: 'top' in b ? b.top : undefined,
-              bottom: 'bottom' in b ? b.bottom : undefined,
-              left: 'left' in b ? b.left : undefined,
-              right: 'right' in b ? b.right : undefined,
+              top: b.top,
+              bottom: b.bottom,
+              left: b.left,
+              right: b.right,
               borderLeft: b.borders.includes('L') ? '3px solid var(--spotlight)' : undefined,
               borderRight: b.borders.includes('R') ? '3px solid var(--spotlight)' : undefined,
               borderTop: b.borders.includes('T') ? '3px solid var(--spotlight)' : undefined,
               borderBottom: b.borders.includes('B') ? '3px solid var(--spotlight)' : undefined,
-              borderTopLeftRadius: b.tl || undefined,
-              borderTopRightRadius: b.tr || undefined,
-              borderBottomLeftRadius: b.bl || undefined,
-              borderBottomRightRadius: b.br || undefined,
+              borderTopLeftRadius: b.tl,
+              borderTopRightRadius: b.tr,
+              borderBottomLeftRadius: b.bl,
+              borderBottomRightRadius: b.br,
             }}
           />
         ))}
     </div>
   );
+}
+
+type Bracket = {
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+  tl?: number;
+  tr?: number;
+  bl?: number;
+  br?: number;
+  borders: string[];
+};
+
+function buildBrackets(corner: number): Bracket[] {
+  return [
+    { top: 8, left: 8, tl: corner, borders: ['L', 'T'] },
+    { top: 8, right: 8, tr: corner, borders: ['R', 'T'] },
+    { bottom: 8, left: 8, bl: corner, borders: ['L', 'B'] },
+    { bottom: 8, right: 8, br: corner, borders: ['R', 'B'] },
+  ];
 }
 
 /* Plain photo (no spotlight) — used for non-rank-1 photos */
