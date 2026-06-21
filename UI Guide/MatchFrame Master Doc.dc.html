@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  .doc{
+    --bg:#F6F6F4; --surface:#FFFFFF; --surface-2:#EFEFEC; --border:#E2E2DE; --border-strong:#CFCFC9;
+    --ink:#17181B; --ink-muted:#5E6066; --ink-subtle:#8A8C92;
+    --primary:#4A40A8; --primary-hover:#3D3690; --primary-fg:#FFFFFF; --primary-soft:#ECEAF8;
+    --spotlight:#E0A23C; --spotlight-soft:#FBEFD6; --spotlight-fg:#4A3411;
+    --success:#3F8F6B; --danger:#C45B52; --danger-soft:#F7E4E2;
+    --shadow-sm:0 1px 2px rgba(23,24,27,.05), 0 4px 14px rgba(23,24,27,.05);
+    --shadow-md:0 6px 18px rgba(23,24,27,.08), 0 16px 40px rgba(23,24,27,.08);
+    background:var(--bg); color:var(--ink); font-family:'IBM Plex Sans',-apple-system,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.55;
+  }
+  .doc-eyebrow{ font-size:13px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--primary); margin:0 0 12px; }
+  .doc-h2{ font:500 32px 'Outfit',sans-serif; letter-spacing:-.01em; margin:0 0 8px; }
+  .doc-lead{ font-size:17px; color:var(--ink-muted); margin:0 0 28px; max-width:64ch; text-wrap:pretty; }
+  .doc-card{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:var(--shadow-sm); }
+  @media print{ .doc-section{ break-inside:avoid; } }
+</style>
+</helmet>
+
+<div class="doc" style="min-height:100vh;">
+<div style="max-width:1040px; margin:0 auto; padding:0 28px;">
+
+  <!-- COVER -->
+  <header style="padding:88px 0 56px; border-bottom:1px solid var(--border);">
+    <div style="display:flex; align-items:center; gap:14px; margin-bottom:40px;">
+      <img src="assets/matchframe-logo.png" alt="MatchFrame" width="44" height="44" style="border-radius:12px; display:block;">
+      <span style="font:600 22px 'IBM Plex Sans',sans-serif; letter-spacing:-.01em;">MatchFrame</span>
+    </div>
+    <p class="doc-eyebrow" style="color:var(--spotlight-fg);">Design system & screen reference</p>
+    <h1 style="font:500 clamp(40px,6vw,60px) 'Outfit',sans-serif; line-height:1.05; letter-spacing:-.02em; margin:0 0 20px; max-width:18ch;">Master design document</h1>
+    <p style="font-size:19px; color:var(--ink-muted); max-width:60ch; margin:0 0 28px; text-wrap:pretty;">The single reference for MatchFrame, a calm, trustworthy product where men upload their dating photos and a simulated audience of women shows which one to lead with. From design tokens through every screen.</p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <span style="display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:999px; background:var(--surface); border:1px solid var(--border); font-size:13px; font-weight:600; color:var(--ink-muted);">Darkroom &amp; Spotlight</span>
+      <span style="display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:999px; background:var(--surface); border:1px solid var(--border); font-size:13px; font-weight:600; color:var(--ink-muted);">Light + Dark</span>
+      <span style="display:inline-flex; align-items:center; gap:7px; padding:7px 14px; border-radius:999px; background:var(--surface); border:1px solid var(--border); font-size:13px; font-weight:600; color:var(--ink-muted);">8 screens · live</span>
+    </div>
+  </header>
+
+  <!-- TOC -->
+  <nav style="padding:36px 0; border-bottom:1px solid var(--border); display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:8px 28px;">
+    <sc-for list="{{ toc }}" as="t" hint-placeholder-count="9">
+      <div style="display:flex; gap:12px; align-items:baseline; padding:6px 0;">
+        <span style="font:600 13px 'Geist Mono',monospace; color:var(--ink-subtle); min-width:22px;">{{ t.num }}</span>
+        <span style="font-size:15px; color:var(--ink); font-weight:500;">{{ t.label }}</span>
+      </div>
+    </sc-for>
+  </nav>
+
+  <!-- 1. PHILOSOPHY -->
+  <section class="doc-section" style="padding:56px 0; border-bottom:1px solid var(--border);">
+    <p class="doc-eyebrow">01 · Philosophy</p>
+    <h2 class="doc-h2">Darkroom &amp; Spotlight</h2>
+    <p class="doc-lead">Photographers keep their workspace a neutral grey so colour judgement stays honest. So do we: the environment is calm and neutral, and one warm gold tone is reserved for a single job, marking the best photo. Attention goes exactly where it matters.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;">
+      <sc-for list="{{ personality }}" as="p" hint-placeholder-count="3">
+        <div class="doc-card">
+          <h3 style="font:600 18px 'IBM Plex Sans',sans-serif; margin:0 0 6px;">{{ p.title }}</h3>
+          <p style="margin:0; font-size:15px; color:var(--ink-muted); text-wrap:pretty;">{{ p.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top:24px; background:var(--primary-soft); border-radius:16px; padding:22px 24px;">
+      <p style="margin:0; font-size:16px; color:var(--ink);"><strong>Not a red/pink dating app.</strong> Those sell excitement; we build trust. Our personality is a calm, honest, kind professional advisor.</p>
+    </div>
+  </section>
+
+  <!-- 2. PRINCIPLES -->
+  <section class="doc-section" style="padding:56px 0; border-bottom:1px solid var(--border);">
+    <p class="doc-eyebrow">02 · Principles</p>
+    <h2 class="doc-h2">Five things that never bend</h2>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+      <sc-for list="{{ principles }}" as="p" hint-placeholder-count="5">
+        <div style="display:flex; gap:16px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px 20px; box-shadow:var(--shadow-sm);">
+          <span style="font:600 15px 'Geist Mono',monospace; color:var(--primary); min-width:26px;">{{ p.num }}</span>
+          <div>
+            <h3 style="font:600 16px 'IBM Plex Sans',sans-serif; margin:0 0 3px;">{{ p.title }}</h3>
+            <p style="margin:0; font-size:15px; color:var(--ink-muted); text-wrap:pretty;">{{ p.body }}</p>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- 3. COLOR -->
+  <section class="doc-section" style="padding:56px 0; border-bottom:1px solid var(--border);">
+    <p class="doc-eyebrow">03 · Color tokens</p>
+    <h2 class="doc-h2">Three roles, two modes</h2>
+    <p class="doc-lead">Every colour is a CSS variable, never hardcoded in a component. Neutral carries the interface, Iris is the brand, and gold spotlight is reserved <em>only</em> for the best photo and its badge.</p>
+    <sc-for list="{{ colorGroups }}" as="g" hint-placeholder-count="4">
+      <div style="margin-bottom:26px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+          <h3 style="font:600 16px 'IBM Plex Sans',sans-serif; margin:0;">{{ g.name }}</h3>
+          <span style="font-size:13px; color:var(--ink-subtle);">{{ g.note }}</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:12px;">
+          <sc-for list="{{ g.tokens }}" as="c" hint-placeholder-count="4">
+            <div style="border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--surface);">
+              <div style="display:flex; height:56px;">
+                <div style="flex:1; background:{{ c.light }};"></div>
+                <div style="flex:1; background:{{ c.dark }};"></div>
+              </div>
+              <div style="padding:10px 12px;">
+                <div style="font:500 13px 'Geist Mono',monospace; color:var(--ink);">{{ c.name }}</div>
+                <div style="font:400 11px 'Geist Mono',monospace; color:var(--ink-subtle); margin-top:2px;">{{ c.light }} · {{ c.dark }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+    <div style="display:flex; gap:10px; align-items:flex-start; background:var(--spotlight-soft); border-radius:14px; padding:16px 18px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--spotlight-fg)" stroke-width="2" style="flex-shrink:0; margin-top:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      <p style="margin:0; font-size:14px; color:var(--spotlight-fg);">Gold is used only for the #1 photo's frame and badge, its score, and a faint hero accent, never for ordinary buttons, links, or small text. Each swatch shows <strong>light · dark</strong> side by side.</p>
+    </div>
+  </section>
+
+  <!-- 4. TYPE -->
+  <section class="doc-section" style="padding:56px 0; border-bottom:1px solid var(--border);">
+    <p class="doc-eyebrow">04 · Typography</p>
+    <h2 class="doc-h2">Two modern sans, a precise mono</h2>
+    <p class="doc-lead">Outfit gives the friendly, confident voice in big headings. IBM Plex Sans carries the whole UI. Geist Mono is for numbers, votes, percentages, ranks, so data reads like a precise instrument.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-bottom:28px;">
+      <div class="doc-card">
+        <div style="font:500 52px 'Outfit',sans-serif; line-height:1; margin-bottom:12px;">Aa</div>
+        <div style="font:600 15px 'IBM Plex Sans',sans-serif;">Outfit</div>
+        <div style="font-size:13px; color:var(--ink-subtle);">Display · 400-500</div>
+      </div>
+      <div class="doc-card">
+        <div style="font:600 52px 'IBM Plex Sans',sans-serif; line-height:1; margin-bottom:12px;">Aa</div>
+        <div style="font:600 15px 'IBM Plex Sans',sans-serif;">IBM Plex Sans</div>
+        <div style="font-size:13px; color:var(--ink-subtle);">Body / UI · 400-700</div>
+      </div>
+      <div class="doc-card">
+        <div style="font:500 52px 'Geist Mono',monospace; line-height:1; margin-bottom:12px;">87</div>
+        <div style="font:600 15px 'IBM Plex Sans',sans-serif;">Geist Mono</div>
+        <div style="font-size:13px; color:var(--ink-subtle);">Data · 400-600</div>
+      </div>
+    </div>
+    <div class="doc-card" style="padding:8px 24px;">
+      <sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="8">
+        <div style="display:flex; align-items:baseline; gap:20px; padding:16px 0; border-bottom:1px solid var(--border);">
+          <div style="min-width:128px; flex-shrink:0;">
+            <div style="font:600 13px 'IBM Plex Sans',sans-serif;">{{ t.name }}</div>
+            <div style="font:400 11px 'Geist Mono',monospace; color:var(--ink-subtle);">{{ t.spec }}</div>
+          </div>
+          <div style="flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font:{{ t.sample }};">{{ t.text }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- 5. SPACING / RADIUS / SHADOW -->
+  <section class="doc-section" style="padding:56px 0; border-bottom:1px solid var(--border);">
+    <p class="doc-eyebrow">05 · Space, radius &amp; shadow</p>
+    <h2 class="doc-h2">Generous and soft</h2>
+    <p class="doc-lead">A 4px spacing scale, soft consistent radii, and gentle multi-layer shadows. White space is part of the calm.</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px;">
+      <div class="doc-card">
+        <h3 style="font:600 15px 'IBM Plex Sans',sans-serif; margin:0 0 14px;">Spacing · 4px scale</h3>
+        <div style="display:flex; align-items:flex-end; gap:8px;">
+          <sc-for list="{{ spacing }}" as="sp" hint-placeholder-count="6">
+            <div style="text-align:center;">
+              <div style="width:18px; background:var(--primary); border-radius:3px; height:{{ sp.px }};"></div>
+              <div style="font:400 10px 'Geist Mono',monospace; color:var(--ink-subtle); margin-top:5px;">{{ sp.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div class="doc-card">
+        <h3 style="font:600 15px 'IBM Plex Sans',sans-serif; margin:0 0 14px;">Radius</h3>
+        <div style="display:flex; gap:14px; flex-wrap:wrap;">
+          <sc-for list="{{ radii }}" as="r" hint-placeholder-count="4">
+            <div style="text-align:center;">
+              <div style="width:52px; height:52px; background:var(--primary-soft); border:1.5px solid var(--primary); border-radius:{{ r.val }};"></div>
+              <div style="font:400 11px 'Geist Mono',monospace; color:var(--ink-subtle); margin-top:6px;">{{ r.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div class="doc-card">
+        <h3 style="font:600 15px 'IBM Plex Sans',sans-serif; margin:0 0 14px;">Shadow</h3>
+        <div style="display:flex; gap:18px;">
+          <div style="text-align:center;"><div style="width:72px; height:52px; background:var(--surface); border-radius:12px; box-shadow:var(--shadow-sm);"></div><div style="font:400 11px 'Geist Mono',monospace; color:var(--ink-subtle); margin-top:8px;">sm · rest</div></div>
+          <div style="text-align:center;"><div style="width:72px; height:52px; background:var(--surface); border-radius:12px; box-shadow:var(--shadow-md);"></div><div style="font:400 11px 'Geist Mono',monospace; color:var(--ink-subtle); margin-top:8px;">md · hover</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. SIGNATURE -->
+  <section class="doc-section" style="padding:56px 0; border-bottom:1px solid var(--border);">
+    <p class="doc-eyebrow" style="color:var(--spotlight-fg);">06 · Signature element</p>
+    <h2 class="doc-h2">The viewfinder focus brackets</h2>
+    <p class="doc-lead">Four corner brackets, like a camera's focus indicator, plus a soft gold halo wrap the #1 photo, and nothing else. It echoes the photography concept and is the one bold gesture in an otherwise calm interface. Never repeat it elsewhere.</p>
+    <div class="doc-card" style="display:grid; place-items:center; padding:48px;">
+      <div style="position:relative; width:200px; height:248px;">
+        <div style="position:absolute; inset:-16px; border-radius:26px; background:radial-gradient(circle at 50% 40%, color-mix(in srgb,var(--spotlight) 45%, transparent), transparent 72%); filter:blur(8px);"></div>
+        <div style="position:absolute; inset:0; border-radius:16px; overflow:hidden; background:linear-gradient(155deg,#c9d2dc,#8a97a8);">
+          <svg viewBox="0 0 200 248" width="100%" height="100%" style="display:block;"><circle cx="100" cy="96" r="42" fill="rgba(255,255,255,.55)"/><path d="M30 248c0-44 31-74 70-74s70 30 70 74z" fill="rgba(255,255,255,.55)"/></svg>
+        </div>
+        <span style="position:absolute; top:8px; left:8px; width:24px; height:24px; border-left:3px solid var(--spotlight); border-top:3px solid var(--spotlight); border-top-left-radius:8px;"></span>
+        <span style="position:absolute; top:8px; right:8px; width:24px; height:24px; border-right:3px solid var(--spotlight); border-top:3px solid var(--spotlight); border-top-right-radius:8px;"></span>
+        <span style="position:absolute; bottom:8px; left:8px; width:24px; height:24px; border-left:3px solid var(--spotlight); border-bottom:3px solid var(--spotlight); border-bottom-left-radius:8px;"></span>
+        <span style="position:absolute; bottom:8px; right:8px; width:24px; height:24px; border-right:3px solid var(--spotlight); border-bottom:3px solid var(--spotlight); border-bottom-right-radius:8px;"></span>
+        <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); white-space:nowrap; display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:999px; background:var(--spotlight); color:#3a2a08; font:600 12px 'IBM Plex Sans',sans-serif; box-shadow:var(--shadow-sm);"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9H22l-6 4.4 2.3 7L12 16l-6.3 4.3 2.3-7-6-4.4h7.6z"/></svg>Best photo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. COMPONENTS -->
+  <section class="doc-section" style="padding:56px 0; border-bottom:1px solid var(--border);">
+    <p class="doc-eyebrow">07 · Components</p>
+    <h2 class="doc-h2">The building blocks</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px;">
+      <div class="doc-card">
+        <h3 style="font:600 15px 'IBM Plex Sans',sans-serif; margin:0 0 4px;">Buttons</h3>
+        <p style="font-size:13px; color:var(--ink-subtle); margin:0 0 16px;">One primary action per screen.</p>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button style="height:44px; border-radius:10px; border:none; background:var(--primary); color:var(--primary-fg); font:600 15px 'IBM Plex Sans',sans-serif; cursor:pointer;">Primary action</button>
+          <button style="height:44px; border-radius:10px; border:1px solid var(--border-strong); background:transparent; color:var(--ink); font:600 15px 'IBM Plex Sans',sans-serif; cursor:pointer;">Secondary</button>
+          <button style="height:44px; border-radius:10px; border:none; background:transparent; color:var(--ink-muted); font:600 15px 'IBM Plex Sans',sans-serif; cursor:pointer;">Ghost</button>
+          <button style="height:44px; border-radius:10px; border:1px solid var(--danger); background:var(--danger-soft); color:var(--danger); font:600 15px 'IBM Plex Sans',sans-serif; cursor:pointer;">Destructive</button>
+        </div>
+      </div>
+      <div class="doc-card">
+        <h3 style="font:600 15px 'IBM Plex Sans',sans-serif; margin:0 0 4px;">Ranking badges</h3>
+        <p style="font-size:13px; color:var(--ink-subtle); margin:0 0 16px;">Meaningful colour + words + icon.</p>
+        <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
+          <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 13px; border-radius:999px; background:var(--spotlight-soft); color:var(--spotlight-fg); font:600 13px 'IBM Plex Sans',sans-serif;"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9H22l-6 4.4 2.3 7L12 16l-6.3 4.3 2.3-7-6-4.4h7.6z"/></svg>Best Main Profile Photo</span>
+          <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 13px; border-radius:999px; background:var(--primary-soft); color:var(--primary); font:600 13px 'IBM Plex Sans',sans-serif;">Strong Supporting Photo</span>
+          <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 13px; border-radius:999px; background:var(--surface-2); color:var(--ink-muted); font:600 13px 'IBM Plex Sans',sans-serif;">Lower Priority</span>
+        </div>
+      </div>
+      <div class="doc-card">
+        <h3 style="font:600 15px 'IBM Plex Sans',sans-serif; margin:0 0 4px;">Input field</h3>
+        <p style="font-size:13px; color:var(--ink-subtle); margin:0 0 16px;">Label above, focus ring in brand.</p>
+        <label style="display:block; font-size:13px; font-weight:600; color:var(--ink-muted); margin-bottom:6px;">Email</label>
+        <input type="email" placeholder="you@example.com" style="width:100%; height:44px; padding:0 14px; border-radius:10px; border:1px solid var(--border-strong); background:var(--bg); color:var(--ink); font:400 15px 'IBM Plex Sans',sans-serif;" style-focus="border-color:var(--primary); box-shadow:0 0 0 3px rgba(74,64,168,.3); outline:none;">
+        <p style="margin:8px 0 0; font-size:12px; color:var(--ink-subtle);">Focus this field to see the ring.</p>
+      </div>
+      <div class="doc-card">
+        <h3 style="font:600 15px 'IBM Plex Sans',sans-serif; margin:0 0 4px;">Status chips</h3>
+        <p style="font-size:13px; color:var(--ink-subtle); margin:0 0 16px;">Dashboard report states.</p>
+        <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
+          <span style="display:inline-flex; align-items:center; gap:7px; padding:5px 12px; border-radius:999px; background:var(--primary-soft); color:var(--primary); font:600 13px 'IBM Plex Sans',sans-serif;"><span style="width:7px; height:7px; border-radius:50%; background:var(--primary);"></span>Completed</span>
+          <span style="display:inline-flex; align-items:center; gap:7px; padding:5px 12px; border-radius:999px; background:var(--surface-2); color:var(--ink-muted); font:600 13px 'IBM Plex Sans',sans-serif;"><span style="width:7px; height:7px; border-radius:50%; background:var(--spotlight);"></span>Processing</span>
+          <span style="display:inline-flex; align-items:center; gap:7px; padding:5px 12px; border-radius:999px; background:var(--danger-soft); color:var(--danger); font:600 13px 'IBM Plex Sans',sans-serif;"><span style="width:7px; height:7px; border-radius:50%; background:var(--danger);"></span>Needs retry</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. MOTION -->
+  <section class="doc-section" style="padding:56px 0; border-bottom:1px solid var(--border);">
+    <p class="doc-eyebrow">08 · Motion</p>
+    <h2 class="doc-h2">Purposeful, never showy</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;">
+      <sc-for list="{{ motion }}" as="m" hint-placeholder-count="4">
+        <div class="doc-card">
+          <h3 style="font:600 16px 'IBM Plex Sans',sans-serif; margin:0 0 6px;">{{ m.title }}</h3>
+          <p style="margin:0; font-size:14px; color:var(--ink-muted); text-wrap:pretty;">{{ m.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- 9. SCREENS -->
+  <section class="doc-section" style="padding:56px 0 24px;">
+    <p class="doc-eyebrow">09 · Screens</p>
+    <h2 class="doc-h2">Every screen, live</h2>
+    <p class="doc-lead">The full connected flow, rendered live from the actual MatchFrame component. Each frame is scaled and scrollable, open <strong>MatchFrame.dc.html</strong> to interact end-to-end.</p>
+
+    <div style="display:flex; flex-direction:column; gap:28px;">
+      <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="8">
+        <div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+            <span style="font:600 14px 'Geist Mono',monospace; color:var(--ink-subtle);">{{ sc.num }}</span>
+            <h3 style="font:600 18px 'IBM Plex Sans',sans-serif; margin:0;">{{ sc.title }}</h3>
+            <span style="padding:3px 10px; border-radius:999px; font:600 11px 'IBM Plex Sans',sans-serif; background:{{ sc.themeBg }}; color:{{ sc.themeFg }};">{{ sc.themeLabel }}</span>
+            <span style="flex:1;"></span>
+            <span style="font-size:13px; color:var(--ink-subtle); text-align:right; max-width:46%; text-wrap:pretty;">{{ sc.note }}</span>
+          </div>
+          <div style="border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:var(--shadow-md); background:{{ sc.canvasBg }};">
+            <div style="display:flex; align-items:center; gap:7px; padding:11px 14px; border-bottom:1px solid {{ sc.barBorder }}; background:{{ sc.barBg }};">
+              <span style="width:11px; height:11px; border-radius:50%; background:#E0655A;"></span>
+              <span style="width:11px; height:11px; border-radius:50%; background:#E5B23C;"></span>
+              <span style="width:11px; height:11px; border-radius:50%; background:#54B06B;"></span>
+              <span style="margin-left:10px; font:400 12px 'Geist Mono',monospace; color:{{ sc.urlFg }};">matchframe.app/{{ sc.path }}</span>
+            </div>
+            <div style="height:520px; overflow:auto; background:{{ sc.canvasBg }};">
+              <div style="zoom:0.5;">
+                <dc-import name="MatchFrame" default-screen="{{ sc.screen }}" default-theme="{{ sc.theme }}" style="width:1280px; display:block;" hint-size="1280px,1600px"></dc-import>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <footer style="padding:40px 0 72px; border-top:1px solid var(--border); margin-top:32px; text-align:center; font-size:13px; color:var(--ink-subtle);">
+    MatchFrame · Master design document · Calm, precise, trustworthy, human.
+  </footer>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    return {
+      toc: [
+        { num:'01', label:'Philosophy' },
+        { num:'02', label:'Principles' },
+        { num:'03', label:'Color tokens' },
+        { num:'04', label:'Typography' },
+        { num:'05', label:'Space, radius & shadow' },
+        { num:'06', label:'Signature element' },
+        { num:'07', label:'Components' },
+        { num:'08', label:'Motion' },
+        { num:'09', label:'Screens' }
+      ],
+      personality: [
+        { title:'Calm, not excited', body:'Plenty of white space and muted colour. Nothing shouts.' },
+        { title:'Precise, not busy', body:'Everything in its place; numbers and ranks stay readable.' },
+        { title:'Warm, not cold', body:'A delicate gold accent adds humanity to a neutral room.' }
+      ],
+      principles: [
+        { num:'1', title:'Trust first', body:'Every screen reassures the user their photos are safe, subtle lock, “private”, and honesty about AI are always present.' },
+        { num:'2', title:'Minimal & focused', body:'Each screen has one main goal. Before finishing, remove one thing (the cape rule).' },
+        { num:'3', title:'Never judgmental', body:'Even a weaker photo is introduced with respect. Harsh red for a “bad” photo is forbidden.' },
+        { num:'4', title:'Dark mode from day one', body:'Not a patch, part of the colour system from the start.' },
+        { num:'5', title:'Content is the guide', body:'Copy is written to help the user, not to sell or decorate.' }
+      ],
+      colorGroups: [
+        { name:'Neutral', note:'environment, surfaces, text', tokens:[
+          { name:'--bg', light:'#F6F6F4', dark:'#121316' },
+          { name:'--surface', light:'#FFFFFF', dark:'#1A1C20' },
+          { name:'--surface-2', light:'#EFEFEC', dark:'#22242A' },
+          { name:'--border', light:'#E2E2DE', dark:'#2C2F36' },
+          { name:'--border-strong', light:'#CFCFC9', dark:'#3A3E47' },
+          { name:'--ink', light:'#17181B', dark:'#ECECEE' },
+          { name:'--ink-muted', light:'#5E6066', dark:'#A6A8AF' },
+          { name:'--ink-subtle', light:'#8A8C92', dark:'#7A7D85' }
+        ]},
+        { name:'Brand · Iris', note:'primary actions, links, focus', tokens:[
+          { name:'--primary', light:'#4A40A8', dark:'#7A6FE8' },
+          { name:'--primary-hover', light:'#3D3690', dark:'#8B81EE' },
+          { name:'--primary-soft', light:'#ECEAF8', dark:'#211F33' },
+          { name:'--primary-fg', light:'#FFFFFF', dark:'#FFFFFF' }
+        ]},
+        { name:'Spotlight · Gold', note:'best photo only', tokens:[
+          { name:'--spotlight', light:'#E0A23C', dark:'#E8B05A' },
+          { name:'--spotlight-soft', light:'#FBEFD6', dark:'#332714' },
+          { name:'--spotlight-fg', light:'#4A3411', dark:'#FBEFD6' }
+        ]},
+        { name:'Status', note:'never harsh', tokens:[
+          { name:'--success', light:'#3F8F6B', dark:'#5BA886' },
+          { name:'--danger', light:'#C45B52', dark:'#D6766C' },
+          { name:'--danger-soft', light:'#F7E4E2', dark:'#2E1E1C' }
+        ]}
+      ],
+      typeScale: [
+        { name:'Display XL', spec:'Outfit · 48-64', text:'Let women pick your best photo', sample:"500 40px 'Outfit',sans-serif" },
+        { name:'Display L', spec:'Outfit · 36', text:'Here is the photo to lead with', sample:"500 30px 'Outfit',sans-serif" },
+        { name:'H1', spec:'IBM Plex · 700 · 30', text:'Your photo tests', sample:"700 24px 'IBM Plex Sans',sans-serif" },
+        { name:'H2', spec:'IBM Plex · 600 · 24', text:'Final ranking', sample:"600 21px 'IBM Plex Sans',sans-serif" },
+        { name:'H3', spec:'IBM Plex · 600 · 20', text:'Who should react?', sample:"600 18px 'IBM Plex Sans',sans-serif" },
+        { name:'Body L', spec:'IBM Plex · 400 · 18', text:'100 AI-simulated women reacted to your photos.', sample:"400 18px 'IBM Plex Sans',sans-serif" },
+        { name:'Body', spec:'IBM Plex · 400 · 16', text:'Natural light and a genuine, relaxed smile.', sample:"400 16px 'IBM Plex Sans',sans-serif" },
+        { name:'Caption', spec:'IBM Plex · 500 · 13', text:'Your photos stay private', sample:"500 13px 'IBM Plex Sans',sans-serif" },
+        { name:'Data', spec:'Geist Mono · 14-16', text:'87% · 87 / 100 votes', sample:"500 15px 'Geist Mono',monospace" }
+      ],
+      spacing: [
+        { label:'4', px:'4px' },{ label:'8', px:'8px' },{ label:'16', px:'16px' },
+        { label:'24', px:'24px' },{ label:'32', px:'32px' },{ label:'48', px:'48px' },{ label:'64', px:'64px' }
+      ],
+      radii: [
+        { label:'sm · 8', val:'8px' },{ label:'md · 10', val:'10px' },{ label:'lg · 16', val:'16px' },{ label:'pill', val:'999px' }
+      ],
+      motion: [
+        { title:'Report entrance', body:'Rankings fade and slide in with a short stagger, a sense of “discovering” the result.' },
+        { title:'Processing', body:'Calm, reassuring step animation. No fast, jumpy motion while the user waits.' },
+        { title:'Hover', body:'Subtle: card lifts 1-2px, gentle button colour shift, 150-250ms.' },
+        { title:'Spotlight halo', body:'The gold halo eases in once, not a constant pulse. prefers-reduced-motion always honoured.' }
+      ],
+      screens: [
+        { num:'01', title:'Landing', screen:'landing', theme:'light', path:'', note:'Hero → how it works → sample → AI honesty → CTA.' },
+        { num:'02', title:'Sign up / Login', screen:'auth', theme:'light', path:'signup', note:'Single centered card, Google + email, security note.' },
+        { num:'03', title:'Dashboard', screen:'dashboard', theme:'light', path:'app', note:'Past tests as cards with status chips; new-test CTA.' },
+        { num:'04', title:'New Analysis / Upload', screen:'upload', theme:'light', path:'app/new', note:'Big drop zone, reorderable previews, audience picker, sticky CTA.' },
+        { num:'05', title:'Payment', screen:'payment', theme:'light', path:'app/pay', note:'Clean order summary + AI reminder + Stripe.' },
+        { num:'06', title:'Submitted / Pending', screen:'processing', theme:'light', path:'app/submitted', note:'Payment confirmed; results in 6-24h by email, also on the dashboard.' },
+        { num:'07', title:'Report, most important', screen:'report', theme:'light', path:'app/report', note:'Best photo in the viewfinder, full ranking, top 3, overall feedback.' },
+        { num:'08', title:'Account / Settings', screen:'account', theme:'light', path:'app/account', note:'Profile, payment history, destructive delete.' },
+        { num:'09', title:'Report, dark mode', screen:'report', theme:'dark', path:'app/report', note:'Same report, dark tokens: borders over heavy shadow.' },
+        { num:'10', title:'Dashboard, dark mode', screen:'dashboard', theme:'dark', path:'app', note:'Dark surfaces, brand lifted for contrast.' }
+      ].map(s=>({ ...s,
+        themeLabel: s.theme==='dark' ? 'Dark' : 'Light',
+        themeBg: s.theme==='dark' ? '#22242A' : 'var(--surface-2)',
+        themeFg: s.theme==='dark' ? '#A6A8AF' : 'var(--ink-muted)',
+        canvasBg: s.theme==='dark' ? '#121316' : '#F6F6F4',
+        barBg: s.theme==='dark' ? '#1A1C20' : '#FFFFFF',
+        barBorder: s.theme==='dark' ? '#2C2F36' : '#E2E2DE',
+        urlFg: s.theme==='dark' ? '#7A7D85' : '#8A8C92'
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

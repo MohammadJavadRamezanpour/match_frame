@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  ::selection{ background:var(--primary-soft); }
+  .mf-root{
+    --bg:#F6F6F4; --surface:#FFFFFF; --surface-2:#EFEFEC; --border:#E2E2DE; --border-strong:#CFCFC9;
+    --ink:#17181B; --ink-muted:#5E6066; --ink-subtle:#8A8C92;
+    --primary:#4A40A8; --primary-hover:#3D3690; --primary-fg:#FFFFFF; --primary-soft:#ECEAF8;
+    --spotlight:#E0A23C; --spotlight-soft:#FBEFD6; --spotlight-fg:#4A3411;
+    --success:#3F8F6B; --danger:#C45B52; --danger-soft:#F7E4E2;
+    --shadow-sm:0 1px 2px rgba(23,24,27,.05), 0 4px 14px rgba(23,24,27,.05);
+    --shadow-md:0 6px 18px rgba(23,24,27,.08), 0 16px 40px rgba(23,24,27,.08);
+    --ring:0 0 0 3px rgba(74,64,168,.30);
+  }
+  .mf-dark{
+    --bg:#121316; --surface:#1A1C20; --surface-2:#22242A; --border:#2C2F36; --border-strong:#3A3E47;
+    --ink:#ECECEE; --ink-muted:#A6A8AF; --ink-subtle:#7A7D85;
+    --primary:#7A6FE8; --primary-hover:#8B81EE; --primary-fg:#FFFFFF; --primary-soft:#211F33;
+    --spotlight:#E8B05A; --spotlight-soft:#332714; --spotlight-fg:#FBEFD6;
+    --success:#5BA886; --danger:#D6766C; --danger-soft:#2E1E1C;
+    --shadow-sm:0 0 0 1px var(--border); --shadow-md:0 0 0 1px var(--border-strong), 0 10px 30px rgba(0,0,0,.35);
+    --ring:0 0 0 3px rgba(122,111,232,.40);
+  }
+  @keyframes mfFadeUp{ from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:none;} }
+  @keyframes mfFadeIn{ from{opacity:0;} to{opacity:1;} }
+  @keyframes mfPop{ 0%{transform:scale(.4); opacity:0;} 60%{transform:scale(1.12);} 100%{transform:scale(1); opacity:1;} }
+  @keyframes mfSpin{ to{transform:rotate(360deg);} }
+  @keyframes mfPulse{ 0%,100%{opacity:.35;} 50%{opacity:1;} }
+  @keyframes mfHalo{ from{opacity:0; transform:scale(.96);} to{opacity:1; transform:scale(1);} }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</helmet>
+
+<div class="mf-root {{ themeClass }}" style="min-height:100vh; background:var(--bg); color:var(--ink); font-family:'IBM Plex Sans',-apple-system,sans-serif; -webkit-font-smoothing:antialiased; line-height:1.5;">
+
+  <!-- ============ APP TOP BAR ============ -->
+  <sc-if value="{{ showAppBar }}" hint-placeholder-val="{{ false }}">
+    <header style="position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter:saturate(140%) blur(10px); border-bottom:1px solid var(--border);">
+      <div style="max-width:1100px; margin:0 auto; padding:12px 24px; display:flex; align-items:center; gap:16px;">
+        <button onClick="{{ goDashboard }}" style="display:flex; align-items:center; gap:10px; background:none; border:none; padding:0; cursor:pointer; color:var(--ink);">
+          <img src="assets/matchframe-logo.png" alt="MatchFrame" width="34" height="34" style="border-radius:9px; display:block;">
+          <span style="font:600 18px 'IBM Plex Sans',sans-serif; letter-spacing:-.01em;">MatchFrame</span>
+        </button>
+        <nav style="margin-left:8px; display:flex; gap:4px;">
+          <button onClick="{{ goDashboard }}" style="{{ navDashStyle }}" style-hover="background:var(--surface-2)">Dashboard</button>
+        </nav>
+        <div style="flex:1;"></div>
+        <div style="display:flex; align-items:center; gap:6px; padding:6px 11px; border-radius:999px; background:var(--surface-2); color:var(--ink-subtle); font-size:13px; font-weight:500;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          Private
+        </div>
+        <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="width:40px; height:40px; display:grid; place-items:center; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--ink); cursor:pointer;" style-hover="background:var(--surface-2)" style-focus="box-shadow:var(--ring); outline:none;">
+          <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg></sc-if>
+          <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.5A8.5 8.5 0 1 1 11.5 3a6.5 6.5 0 0 0 9.5 9.5z"/></svg></sc-if>
+        </button>
+        <button onClick="{{ goAccount }}" aria-label="Account" style="width:40px; height:40px; border-radius:999px; border:1px solid var(--border); background:var(--primary-soft); color:var(--primary); font:600 14px 'IBM Plex Sans',sans-serif; cursor:pointer;" style-hover="box-shadow:var(--shadow-sm)" style-focus="box-shadow:var(--ring); outline:none;">AR</button>
+      </div>
+    </header>
+  </sc-if>
+
+  <!-- ============ LANDING ============ -->
+  <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
+  <div style="animation:mfFadeIn .4s both;">
+    <header style="max-width:1140px; margin:0 auto; padding:22px 24px; display:flex; align-items:center; gap:16px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <img src="assets/matchframe-logo.png" alt="MatchFrame" width="36" height="36" style="border-radius:10px; display:block;">
+        <span style="font:600 19px 'IBM Plex Sans',sans-serif; letter-spacing:-.01em;">MatchFrame</span>
+      </div>
+      <div style="flex:1;"></div>
+      <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="width:40px; height:40px; display:grid; place-items:center; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--ink); cursor:pointer;" style-hover="background:var(--surface-2)">
+        <sc-if value="{{ isDark }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg></sc-if>
+        <sc-if value="{{ isLight }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.5A8.5 8.5 0 1 1 11.5 3a6.5 6.5 0 0 0 9.5 9.5z"/></svg></sc-if>
+      </button>
+      <button onClick="{{ goLogin }}" style="height:42px; padding:0 16px; border-radius:10px; border:none; background:none; color:var(--ink-muted); font:600 15px 'IBM Plex Sans',sans-serif; cursor:pointer;" style-hover="color:var(--ink)">Sign in</button>
+      <button onClick="{{ goSignup }}" style="height:42px; padding:0 18px; border-radius:10px; border:none; background:var(--primary); color:var(--primary-fg); font:600 15px 'IBM Plex Sans',sans-serif; cursor:pointer; box-shadow:var(--shadow-sm);" style-hover="background:var(--primary-hover)">Get started</button>
+    </header>
+
+    <!-- Hero -->
+    <section style="max-width:1140px; margin:0 auto; padding:56px 24px 40px; display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:52px; align-items:center;">
+      <div>
+        <h1 style="font:600 clamp(38px,5.4vw,60px) 'Outfit',sans-serif; line-height:1.06; letter-spacing:-.02em; margin:0 0 20px;">
+          Let women pick<br>your <span style="color:var(--primary);">best</span> photo.
+        </h1>
+        <p style="max-width:520px; margin:0 0 32px; font-size:19px; color:var(--ink-muted); text-wrap:pretty;">
+          Upload your dating photos and an audience of simulated women tells you, calmly and clearly, which one to lead with, and why.
+        </p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button onClick="{{ goSignup }}" style="height:52px; padding:0 26px; border-radius:10px; border:none; background:var(--primary); color:var(--primary-fg); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer; box-shadow:var(--shadow-sm);" style-hover="background:var(--primary-hover)">Start your photo test</button>
+          <button onClick="{{ goReport }}" style="height:52px; padding:0 26px; border-radius:10px; border:1px solid var(--border-strong); background:var(--surface); color:var(--ink); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer;" style-hover="background:var(--surface-2)">See a sample report</button>
+        </div>
+        <p style="margin:20px 0 0; font-size:13px; color:var(--ink-subtle); display:flex; gap:14px; flex-wrap:wrap;">
+          <span style="display:inline-flex; align-items:center; gap:6px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Your photos stay private</span>
+          <span>·</span><span>No subscription</span><span>·</span><span>Results in minutes</span>
+        </p>
+      </div>
+
+      <!-- Product image: report mockup -->
+      <div style="position:relative;">
+        <div style="position:absolute; inset:6% 8% 12% 8%; border-radius:30px; background:radial-gradient(circle at 60% 35%, color-mix(in srgb,var(--primary) 26%, transparent), transparent 70%); filter:blur(34px);"></div>
+        <div style="position:relative; background:var(--surface); border:1px solid var(--border); border-radius:18px; box-shadow:var(--shadow-md); overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:7px; padding:11px 14px; border-bottom:1px solid var(--border);">
+            <span style="width:10px; height:10px; border-radius:50%; background:#E0655A;"></span>
+            <span style="width:10px; height:10px; border-radius:50%; background:#E5B23C;"></span>
+            <span style="width:10px; height:10px; border-radius:50%; background:#54B06B;"></span>
+            <span style="margin-left:8px; font:400 11px 'Geist Mono',monospace; color:var(--ink-subtle);">matchframe.app/report</span>
+          </div>
+          <div style="padding:22px;">
+            <p style="font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-subtle); margin:0 0 4px;">Your report</p>
+            <h3 style="font:600 19px 'Outfit',sans-serif; margin:0 0 18px;">The photo to lead with</h3>
+            <div style="display:flex; gap:18px; align-items:center;">
+              <div style="position:relative; width:104px; height:130px; flex-shrink:0;">
+                <div style="position:absolute; inset:-9px; border-radius:18px; background:radial-gradient(circle at 50% 40%, color-mix(in srgb,var(--spotlight) 48%, transparent), transparent 72%); filter:blur(5px);"></div>
+                <div style="position:absolute; inset:0; border-radius:11px; overflow:hidden; background:linear-gradient(155deg,#c9d2dc,#8a97a8);">
+                  <svg viewBox="0 0 104 130" width="100%" height="100%" style="display:block;"><circle cx="52" cy="50" r="22" fill="rgba(255,255,255,.55)"/><path d="M16 130c0-22 16-37 36-37s36 15 36 37z" fill="rgba(255,255,255,.55)"/></svg>
+                </div>
+                <span style="position:absolute; top:5px; left:5px; width:16px; height:16px; border-left:2.5px solid var(--spotlight); border-top:2.5px solid var(--spotlight); border-top-left-radius:5px;"></span>
+                <span style="position:absolute; top:5px; right:5px; width:16px; height:16px; border-right:2.5px solid var(--spotlight); border-top:2.5px solid var(--spotlight); border-top-right-radius:5px;"></span>
+                <span style="position:absolute; bottom:5px; left:5px; width:16px; height:16px; border-left:2.5px solid var(--spotlight); border-bottom:2.5px solid var(--spotlight); border-bottom-left-radius:5px;"></span>
+                <span style="position:absolute; bottom:5px; right:5px; width:16px; height:16px; border-right:2.5px solid var(--spotlight); border-bottom:2.5px solid var(--spotlight); border-bottom-right-radius:5px;"></span>
+              </div>
+              <div>
+                <span style="display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px; background:var(--spotlight-soft); color:var(--spotlight-fg); font:600 11px 'IBM Plex Sans',sans-serif; margin-bottom:8px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9H22l-6 4.4 2.3 7L12 16l-6.3 4.3 2.3-7-6-4.4h7.6z"/></svg>Best photo</span>
+                <div style="display:flex; align-items:baseline; gap:8px;"><span style="font:600 30px 'Geist Mono',monospace; color:var(--spotlight-fg);">87%</span><span style="font:400 12px 'Geist Mono',monospace; color:var(--ink-subtle);">87 / 100</span></div>
+                <p style="margin:6px 0 0; font-size:13px; color:var(--ink-muted);">Natural light, genuine smile, eyes clearly visible.</p>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:18px;">
+              <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border); border-radius:10px;">
+                <span style="font:600 12px 'Geist Mono',monospace; color:var(--ink-subtle);">#2</span>
+                <div style="width:22px; height:28px; border-radius:5px; background:linear-gradient(155deg,#d2c9d8,#a08aa8);"></div>
+                <span style="flex:1; font-size:13px; font-weight:500;">Strong supporting photo</span>
+                <span style="font:600 13px 'Geist Mono',monospace;">79%</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border); border-radius:10px;">
+                <span style="font:600 12px 'Geist Mono',monospace; color:var(--ink-subtle);">#3</span>
+                <div style="width:22px; height:28px; border-radius:5px; background:linear-gradient(155deg,#c9d8d6,#8aa8a4);"></div>
+                <span style="flex:1; font-size:13px; font-weight:500;">Strong supporting photo</span>
+                <span style="font:600 13px 'Geist Mono',monospace;">71%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section style="max-width:1100px; margin:0 auto; padding:48px 24px;">
+      <p style="text-align:center; font-size:13px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-subtle); margin:0 0 28px;">How it works</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px;">
+        <sc-for list="{{ steps }}" as="step" hint-placeholder-count="3">
+          <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; box-shadow:var(--shadow-sm);">
+            <div style="width:40px; height:40px; border-radius:10px; background:var(--primary-soft); color:var(--primary); display:grid; place-items:center; font:600 16px 'Geist Mono',monospace; margin-bottom:16px;">{{ step.num }}</div>
+            <h3 style="font:600 19px 'IBM Plex Sans',sans-serif; margin:0 0 8px;">{{ step.title }}</h3>
+            <p style="margin:0; font-size:15px; color:var(--ink-muted); text-wrap:pretty;">{{ step.body }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Sample spotlight -->
+    <section style="max-width:1100px; margin:0 auto; padding:32px 24px 48px;">
+      <div style="background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:clamp(24px,5vw,52px); box-shadow:var(--shadow-md); display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:40px; align-items:center;">
+        <div>
+          <p style="font-size:13px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--spotlight); margin:0 0 14px;">The signature moment</p>
+          <h2 style="font:500 32px 'Outfit',sans-serif; line-height:1.1; margin:0 0 16px;">One photo gets the spotlight.</h2>
+          <p style="margin:0 0 20px; font-size:16px; color:var(--ink-muted); text-wrap:pretty;">We never shout that a photo is “bad.” Your strongest image is framed in gold; the rest are ranked gently, with a reason for every placement.</p>
+          <button onClick="{{ goReport }}" style="height:46px; padding:0 20px; border-radius:10px; border:1px solid var(--border-strong); background:transparent; color:var(--ink); font:600 15px 'IBM Plex Sans',sans-serif; cursor:pointer;" style-hover="background:var(--surface-2)">View the full sample report →</button>
+        </div>
+        <div style="display:grid; place-items:center;">
+          <div style="position:relative; width:200px; height:248px;">
+            <div style="position:absolute; inset:-14px; border-radius:24px; background:radial-gradient(circle at 50% 40%, color-mix(in srgb,var(--spotlight) 40%, transparent), transparent 70%); filter:blur(6px);"></div>
+            <div style="position:absolute; inset:0; border-radius:16px; overflow:hidden; background:linear-gradient(155deg,#c9d2dc,#8a97a8);">
+              <svg viewBox="0 0 200 248" width="100%" height="100%" style="display:block;"><circle cx="100" cy="96" r="42" fill="rgba(255,255,255,.55)"/><path d="M30 248c0-44 31-74 70-74s70 30 70 74z" fill="rgba(255,255,255,.55)"/></svg>
+            </div>
+            <span style="position:absolute; top:8px; left:8px; width:24px; height:24px; border-left:3px solid var(--spotlight); border-top:3px solid var(--spotlight); border-top-left-radius:8px;"></span>
+            <span style="position:absolute; top:8px; right:8px; width:24px; height:24px; border-right:3px solid var(--spotlight); border-top:3px solid var(--spotlight); border-top-right-radius:8px;"></span>
+            <span style="position:absolute; bottom:8px; left:8px; width:24px; height:24px; border-left:3px solid var(--spotlight); border-bottom:3px solid var(--spotlight); border-bottom-left-radius:8px;"></span>
+            <span style="position:absolute; bottom:8px; right:8px; width:24px; height:24px; border-right:3px solid var(--spotlight); border-bottom:3px solid var(--spotlight); border-bottom-right-radius:8px;"></span>
+            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); white-space:nowrap; display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:999px; background:var(--spotlight); color:#3a2a08; font:600 12px 'IBM Plex Sans',sans-serif; box-shadow:var(--shadow-sm);"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9H22l-6 4.4 2.3 7L12 16l-6.3 4.3 2.3-7-6-4.4h7.6z"/></svg>Best photo</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI honesty -->
+    <section style="max-width:1100px; margin:0 auto; padding:24px 24px 56px;">
+      <div style="background:var(--primary-soft); border-radius:20px; padding:clamp(24px,4vw,40px); display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
+        <div style="width:46px; height:46px; border-radius:12px; background:var(--surface); color:var(--primary); display:grid; place-items:center; flex-shrink:0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+        </div>
+        <div style="flex:1; min-width:240px;">
+          <h3 style="font:600 20px 'IBM Plex Sans',sans-serif; margin:0 0 8px; color:var(--ink);">The voters are AI, and we say so plainly.</h3>
+          <p style="margin:0; font-size:16px; color:var(--ink-muted); text-wrap:pretty;">Every reaction comes from AI-simulated women modelled on the audience you choose, not real people seeing your face. It’s a fast, private rehearsal before you post anywhere real.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section style="max-width:1100px; margin:0 auto; padding:8px 24px 80px; text-align:center;">
+      <h2 style="font:500 34px 'Outfit',sans-serif; line-height:1.1; margin:0 0 16px;">Better photos. Better matches.</h2>
+      <button onClick="{{ goSignup }}" style="height:52px; padding:0 28px; border-radius:10px; border:none; background:var(--primary); color:var(--primary-fg); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer; box-shadow:var(--shadow-sm);" style-hover="background:var(--primary-hover)">Start your photo test</button>
+    </section>
+
+    <footer style="border-top:1px solid var(--border); padding:24px; text-align:center; font-size:13px; color:var(--ink-subtle);">© 2026 MatchFrame · Private by design</footer>
+  </div>
+  </sc-if>
+
+  <!-- ============ AUTH ============ -->
+  <sc-if value="{{ isAuth }}" hint-placeholder-val="{{ false }}">
+  <div style="min-height:100vh; display:flex; flex-direction:column; animation:mfFadeIn .35s both;">
+    <header style="padding:22px 24px;">
+      <button onClick="{{ goLanding }}" style="display:inline-flex; align-items:center; gap:10px; background:none; border:none; padding:0; cursor:pointer; color:var(--ink);">
+        <img src="assets/matchframe-logo.png" alt="MatchFrame" width="32" height="32" style="border-radius:9px; display:block;">
+        <span style="font:600 18px 'IBM Plex Sans',sans-serif;">MatchFrame</span>
+      </button>
+    </header>
+    <div style="flex:1; display:grid; place-items:center; padding:24px;">
+      <div style="width:100%; max-width:400px; animation:mfFadeUp .5s both;">
+        <h1 style="font:500 34px 'Outfit',sans-serif; text-align:center; margin:0 0 8px;">{{ authTitle }}</h1>
+        <p style="text-align:center; color:var(--ink-muted); margin:0 0 28px; font-size:15px;">{{ authSub }}</p>
+        <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; box-shadow:var(--shadow-sm);">
+          <button style="width:100%; height:46px; border-radius:10px; border:1px solid var(--border-strong); background:transparent; color:var(--ink); font:600 15px 'IBM Plex Sans',sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;" style-hover="background:var(--surface-2)">
+            <svg width="17" height="17" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.5 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.9a5 5 0 0 1-2.2 3.3v2.7h3.6c2.1-2 3.2-4.8 3.2-7.9z"/><path fill="#34A853" d="M12 23c2.9 0 5.4-1 7.2-2.6l-3.6-2.7c-1 .7-2.3 1.1-3.6 1.1-2.8 0-5.1-1.9-6-4.4H2.3v2.8A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M6 14.3a6.6 6.6 0 0 1 0-4.2V7.3H2.3a11 11 0 0 0 0 9.8z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3 .5 4.1 1.6l3.1-3.1A11 11 0 0 0 2.3 7.3L6 10.1c.9-2.6 3.2-4.7 6-4.7z"/></svg>
+            Continue with Google
+          </button>
+          <div style="display:flex; align-items:center; gap:12px; margin:18px 0; color:var(--ink-subtle); font-size:13px;"><span style="flex:1; height:1px; background:var(--border);"></span>or<span style="flex:1; height:1px; background:var(--border);"></span></div>
+          <label style="display:block; font-size:13px; font-weight:600; color:var(--ink-muted); margin-bottom:6px;">Email</label>
+          <input type="email" placeholder="you@example.com" style="width:100%; height:46px; padding:0 14px; border-radius:10px; border:1px solid var(--border-strong); background:var(--bg); color:var(--ink); font:400 15px 'IBM Plex Sans',sans-serif; margin-bottom:16px;" style-focus="border-color:var(--primary); box-shadow:var(--ring); outline:none;">
+          <label style="display:block; font-size:13px; font-weight:600; color:var(--ink-muted); margin-bottom:6px;">Password</label>
+          <input type="password" placeholder="••••••••" style="width:100%; height:46px; padding:0 14px; border-radius:10px; border:1px solid var(--border-strong); background:var(--bg); color:var(--ink); font:400 15px 'IBM Plex Sans',sans-serif; margin-bottom:22px;" style-focus="border-color:var(--primary); box-shadow:var(--ring); outline:none;">
+          <button onClick="{{ goDashboard }}" style="width:100%; height:48px; border-radius:10px; border:none; background:var(--primary); color:var(--primary-fg); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer;" style-hover="background:var(--primary-hover)">{{ authCta }}</button>
+        </div>
+        <p style="text-align:center; margin:18px 0 0; font-size:14px; color:var(--ink-muted);">
+          {{ authSwitchText }} <button onClick="{{ toggleAuth }}" style="background:none; border:none; padding:0; color:var(--primary); font:600 14px 'IBM Plex Sans',sans-serif; cursor:pointer;">{{ authSwitchCta }}</button>
+        </p>
+        <p style="text-align:center; margin:18px 0 0; font-size:13px; color:var(--ink-subtle); display:flex; align-items:center; gap:6px; justify-content:center;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          Your photos and email are kept private and encrypted.
+        </p>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ DASHBOARD ============ -->
+  <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:1100px; margin:0 auto; padding:40px 24px 96px; animation:mfFadeUp .45s both;">
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:28px;">
+      <div>
+        <h1 style="font:500 36px 'Outfit',sans-serif; margin:0 0 6px;">Your photo tests</h1>
+        <p style="margin:0; color:var(--ink-muted); font-size:16px;">Pick up a report, or start a fresh analysis.</p>
+      </div>
+      <button onClick="{{ goUpload }}" style="height:48px; padding:0 22px; border-radius:10px; border:none; background:var(--primary); color:var(--primary-fg); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer; box-shadow:var(--shadow-sm); display:inline-flex; align-items:center; gap:8px;" style-hover="background:var(--primary-hover)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>New photo test
+      </button>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:18px;">
+      <sc-for list="{{ reports }}" as="r" hint-placeholder-count="3">
+        <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:22px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:16px; animation:mfFadeUp .5s both; animation-delay:calc({{ $index }} * 70ms);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+            <div>
+              <h3 style="font:600 18px 'IBM Plex Sans',sans-serif; margin:0 0 4px;">{{ r.name }}</h3>
+              <p style="margin:0; font-size:13px; color:var(--ink-subtle); font-family:'Geist Mono',monospace;">{{ r.date }} · {{ r.count }} photos</p>
+            </div>
+            <span style="white-space:nowrap; display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:999px; font-size:12px; font-weight:600; background:{{ r.badgeBg }}; color:{{ r.badgeFg }};">
+              <span style="width:7px; height:7px; border-radius:50%; background:{{ r.dot }};"></span>{{ r.statusLabel }}
+            </span>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <sc-for list="{{ r.thumbs }}" as="t" hint-placeholder-count="3">
+              <div style="flex:1; aspect-ratio:3/4; border-radius:8px; background:{{ t }};"></div>
+            </sc-for>
+          </div>
+          <button onClick="{{ r.action }}" style="height:42px; border-radius:10px; border:1px solid {{ r.btnBorder }}; background:{{ r.btnBg }}; color:{{ r.btnFg }}; font:600 14px 'IBM Plex Sans',sans-serif; cursor:pointer;" style-hover="opacity:.9">{{ r.actionLabel }}</button>
+        </div>
+      </sc-for>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ============ UPLOAD ============ -->
+  <sc-if value="{{ isUpload }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:760px; margin:0 auto; padding:40px 24px 120px; animation:mfFadeUp .45s both;">
+    <p style="font-size:13px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-subtle); margin:0 0 8px;">New photo test</p>
+    <h1 style="font:500 34px 'Outfit',sans-serif; margin:0 0 28px;">Add your photos</h1>
+
+    <div style="border:2px dashed var(--border-strong); border-radius:16px; padding:36px 24px; text-align:center; background:var(--surface); margin-bottom:14px;" style-hover="border-color:var(--primary)">
+      <div style="width:52px; height:52px; border-radius:14px; background:var(--primary-soft); color:var(--primary); display:grid; place-items:center; margin:0 auto 14px;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
+      </div>
+      <p style="margin:0 0 4px; font-size:16px; font-weight:600;">Drag photos here, or tap to browse</p>
+      <p style="margin:0; font-size:13px; color:var(--ink-subtle);">2-10 photos · JPG or PNG · up to 10 MB each</p>
+    </div>
+    <p style="margin:0 0 22px; font-size:13px; color:var(--ink-subtle); text-align:center;">{{ uploadCount }} of 10 added · drag a photo to reorder</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:14px; margin-bottom:36px;">
+      <sc-for list="{{ uploadPhotos }}" as="p" hint-placeholder-count="4">
+        <div style="position:relative; aspect-ratio:3/4; border-radius:12px; overflow:hidden; background:{{ p.grad }}; box-shadow:var(--shadow-sm);">
+          <svg viewBox="0 0 120 160" width="100%" height="100%" style="display:block;"><circle cx="60" cy="60" r="26" fill="rgba(255,255,255,.5)"/><path d="M18 160c0-28 19-46 42-46s42 18 42 46z" fill="rgba(255,255,255,.5)"/></svg>
+          <span style="position:absolute; top:8px; left:8px; padding:2px 8px; border-radius:999px; background:rgba(0,0,0,.45); color:#fff; font:500 11px 'Geist Mono',monospace;">{{ p.label }}</span>
+          <button aria-label="Remove" style="position:absolute; top:6px; right:6px; width:26px; height:26px; border-radius:999px; border:none; background:rgba(0,0,0,.5); color:#fff; cursor:pointer; display:grid; place-items:center;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+      </sc-for>
+      <button style="aspect-ratio:3/4; border-radius:12px; border:2px dashed var(--border-strong); background:transparent; color:var(--ink-subtle); cursor:pointer; display:grid; place-items:center;" style-hover="border-color:var(--primary); color:var(--primary)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+
+    <h2 style="font:600 20px 'IBM Plex Sans',sans-serif; margin:0 0 6px;">Which women should vote?</h2>
+    <p style="margin:0 0 16px; font-size:14px; color:var(--ink-muted);">We’ll simulate an audience of women in the age range you want to meet.</p>
+    <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:40px;">
+      <sc-for list="{{ audiences }}" as="a" hint-placeholder-count="4">
+        <button onClick="{{ a.select }}" style="padding:10px 16px; border-radius:10px; border:1px solid {{ a.border }}; background:{{ a.bg }}; color:{{ a.fg }}; font:600 14px 'IBM Plex Sans',sans-serif; cursor:pointer;">{{ a.label }}</button>
+      </sc-for>
+    </div>
+
+    <div style="position:sticky; bottom:0; padding:16px 0; background:linear-gradient(to top, var(--bg) 70%, transparent); display:flex; gap:12px; align-items:center;">
+      <p style="margin:0; flex:1; font-size:13px; color:var(--ink-subtle); display:flex; align-items:center; gap:6px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Photos are deleted after your report unless you save them.
+      </p>
+      <button onClick="{{ goPayment }}" style="height:50px; padding:0 26px; border-radius:10px; border:none; background:var(--primary); color:var(--primary-fg); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer; box-shadow:var(--shadow-sm);" style-hover="background:var(--primary-hover)">Continue to payment →</button>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ============ PAYMENT ============ -->
+  <sc-if value="{{ isPayment }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:480px; margin:0 auto; padding:48px 24px 96px; animation:mfFadeUp .45s both;">
+    <button onClick="{{ goUpload }}" style="background:none; border:none; padding:0; color:var(--ink-muted); font:500 14px 'IBM Plex Sans',sans-serif; cursor:pointer; margin-bottom:18px;" style-hover="color:var(--ink)">← Back to photos</button>
+    <h1 style="font:500 32px 'Outfit',sans-serif; margin:0 0 24px;">Review &amp; pay</h1>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:var(--shadow-sm); margin-bottom:18px;">
+      <div style="display:flex; justify-content:space-between; padding:10px 0; font-size:15px;"><span style="color:var(--ink-muted);">Photo test · 6 photos</span><span style="font-family:'Geist Mono',monospace;">$12.00</span></div>
+      <div style="display:flex; justify-content:space-between; padding:10px 0; font-size:15px;"><span style="color:var(--ink-muted);">Audience · Women, 25-34</span><span style="font-family:'Geist Mono',monospace;">100 voters</span></div>
+      <div style="height:1px; background:var(--border); margin:8px 0;"></div>
+      <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:18px; font-weight:600;"><span>Total</span><span style="font-family:'Geist Mono',monospace;">$12.00</span></div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:flex-start; background:var(--primary-soft); border-radius:12px; padding:14px 16px; margin-bottom:22px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="flex-shrink:0; margin-top:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      <p style="margin:0; font-size:13px; color:var(--ink-muted);">Reactions are generated by AI-simulated women, not real people. This is a private rehearsal of your photos.</p>
+    </div>
+    <button onClick="{{ goProcessing }}" style="width:100%; height:52px; border-radius:10px; border:none; background:var(--primary); color:var(--primary-fg); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer; box-shadow:var(--shadow-sm); display:flex; align-items:center; justify-content:center; gap:8px;" style-hover="background:var(--primary-hover)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Pay $12.00 securely
+    </button>
+    <p style="text-align:center; margin:14px 0 0; font-size:12px; color:var(--ink-subtle);">Payments handled by Stripe · cards never touch our servers</p>
+  </main>
+  </sc-if>
+
+  <!-- ============ SUBMITTED (post-payment confirmation) ============ -->
+  <sc-if value="{{ isProcessing }}" hint-placeholder-val="{{ false }}">
+  <main style="min-height:78vh; display:grid; place-items:center; padding:48px 24px; animation:mfFadeIn .4s both;">
+    <div style="width:100%; max-width:480px; text-align:center;">
+      <div style="position:relative; width:84px; height:84px; margin:0 auto 26px;">
+        <div style="position:absolute; inset:-10px; border-radius:50%; background:radial-gradient(circle, color-mix(in srgb,var(--success) 30%, transparent), transparent 70%); filter:blur(6px); animation:mfHalo .9s both .2s; opacity:0;"></div>
+        <div style="position:absolute; inset:0; border-radius:50%; background:color-mix(in srgb,var(--success) 16%, var(--surface)); border:1px solid color-mix(in srgb,var(--success) 40%, transparent); display:grid; place-items:center; color:var(--success);">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="animation:mfPop .4s both .2s;"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+      </div>
+      <h1 style="font:600 28px 'Outfit',sans-serif; margin:0 0 10px;">Payment received, your photos are in the queue</h1>
+      <p style="margin:0 0 28px; color:var(--ink-muted); font-size:16px; text-wrap:pretty;">A simulated audience is now reviewing your photos. Results are ready in <strong style="color:var(--ink);">6 to 24 hours</strong>, this gives the vote time to settle into a clear, reliable ranking.</p>
+
+      <div style="text-align:left; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:8px 8px; box-shadow:var(--shadow-sm); margin-bottom:24px;">
+        <div style="display:flex; align-items:flex-start; gap:14px; padding:16px;">
+          <span style="width:36px; height:36px; flex-shrink:0; border-radius:10px; background:var(--primary-soft); color:var(--primary); display:grid; place-items:center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          </span>
+          <div>
+            <div style="font:600 15px 'IBM Plex Sans',sans-serif; margin-bottom:2px;">We’ll email you the moment it’s ready</div>
+            <div style="font-size:14px; color:var(--ink-muted);">A note goes to <span style="font-family:'Geist Mono',monospace; font-size:13px;">ar.daneshvar@example.com</span> with a link to your report.</div>
+          </div>
+        </div>
+        <div style="height:1px; background:var(--border); margin:0 16px;"></div>
+        <div style="display:flex; align-items:flex-start; gap:14px; padding:16px;">
+          <span style="width:36px; height:36px; flex-shrink:0; border-radius:10px; background:var(--primary-soft); color:var(--primary); display:grid; place-items:center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </span>
+          <div>
+            <div style="font:600 15px 'IBM Plex Sans',sans-serif; margin-bottom:2px;">Or find it on your dashboard</div>
+            <div style="font-size:14px; color:var(--ink-muted);">This test now shows as “Processing” there, and switches to your full report when it’s done.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <button onClick="{{ goDashboard }}" style="height:50px; padding:0 24px; border-radius:10px; border:none; background:var(--primary); color:var(--primary-fg); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer; box-shadow:var(--shadow-sm);" style-hover="background:var(--primary-hover)">Go to dashboard</button>
+        <button onClick="{{ goUpload }}" style="height:50px; padding:0 24px; border-radius:10px; border:1px solid var(--border-strong); background:transparent; color:var(--ink); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer;" style-hover="background:var(--surface-2)">Start another test</button>
+      </div>
+      <p style="margin:18px 0 0; font-size:13px; color:var(--ink-subtle); display:inline-flex; align-items:center; gap:6px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Your photos stay private and are deleted after your report unless you save them.
+      </p>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ============ REPORT ============ -->
+  <sc-if value="{{ isReport }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:880px; margin:0 auto; padding:40px 24px 110px;">
+    <div style="animation:mfFadeUp .5s both;">
+      <p style="font-size:13px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-subtle); margin:0 0 8px;">Your report · Jun 14, 2026</p>
+      <h1 style="font:500 38px 'Outfit',sans-serif; margin:0 0 8px;">Here’s the photo to lead with</h1>
+      <p style="margin:0 0 36px; color:var(--ink-muted); font-size:17px; max-width:60ch; text-wrap:pretty;">100 AI-simulated women (ages 25-34) reacted to your six photos. One stood out clearly as your strongest first impression.</p>
+    </div>
+
+    <!-- Best photo with viewfinder -->
+    <section style="background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:clamp(24px,4vw,40px); box-shadow:var(--shadow-md); margin-bottom:40px; display:grid; grid-template-columns:minmax(200px,260px) 1fr; gap:36px; align-items:center; animation:mfFadeUp .55s both; animation-delay:90ms;">
+      <div style="display:grid; place-items:center;">
+        <div style="position:relative; width:220px; height:272px;">
+          <div style="position:absolute; inset:-18px; border-radius:28px; background:radial-gradient(circle at 50% 38%, color-mix(in srgb,var(--spotlight) 45%, transparent), transparent 72%); filter:blur(8px); animation:mfHalo .9s both .3s; opacity:0;"></div>
+          <div style="position:absolute; inset:0; border-radius:16px; overflow:hidden; background:linear-gradient(155deg,#c9d2dc,#8a97a8);">
+            <svg viewBox="0 0 220 272" width="100%" height="100%" style="display:block;"><circle cx="110" cy="104" r="46" fill="rgba(255,255,255,.55)"/><path d="M34 272c0-48 34-80 76-80s76 32 76 80z" fill="rgba(255,255,255,.55)"/></svg>
+          </div>
+          <span style="position:absolute; top:8px; left:8px; width:26px; height:26px; border-left:3px solid var(--spotlight); border-top:3px solid var(--spotlight); border-top-left-radius:8px;"></span>
+          <span style="position:absolute; top:8px; right:8px; width:26px; height:26px; border-right:3px solid var(--spotlight); border-top:3px solid var(--spotlight); border-top-right-radius:8px;"></span>
+          <span style="position:absolute; bottom:8px; left:8px; width:26px; height:26px; border-left:3px solid var(--spotlight); border-bottom:3px solid var(--spotlight); border-bottom-left-radius:8px;"></span>
+          <span style="position:absolute; bottom:8px; right:8px; width:26px; height:26px; border-right:3px solid var(--spotlight); border-bottom:3px solid var(--spotlight); border-bottom-right-radius:8px;"></span>
+        </div>
+      </div>
+      <div>
+        <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 13px; border-radius:999px; background:var(--spotlight-soft); color:var(--spotlight-fg); font:600 13px 'IBM Plex Sans',sans-serif; margin-bottom:14px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9H22l-6 4.4 2.3 7L12 16l-6.3 4.3 2.3-7-6-4.4h7.6z"/></svg>
+          #1 · Best Main Profile Photo
+        </span>
+        <div style="display:flex; align-items:baseline; gap:14px; margin-bottom:12px;">
+          <span style="font:600 40px 'Geist Mono',monospace; color:var(--spotlight-fg);">87%</span>
+          <span style="font-size:14px; color:var(--ink-subtle); font-family:'Geist Mono',monospace;">87 / 100 chose it first</span>
+        </div>
+        <p style="margin:0; font:400 17px 'IBM Plex Sans',sans-serif; color:var(--ink-muted); text-wrap:pretty;">Natural light and a genuine, relaxed smile. Your eyes are clearly visible and the framing feels open and approachable, this is the photo that makes people want to know more.</p>
+      </div>
+    </section>
+
+    <!-- Final ranking -->
+    <section style="margin-bottom:40px; animation:mfFadeUp .5s both; animation-delay:140ms;">
+      <h2 style="font:600 22px 'IBM Plex Sans',sans-serif; margin:0 0 16px;">Final ranking</h2>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ ranking }}" as="r" hint-placeholder-count="6">
+          <div style="display:flex; align-items:center; gap:16px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:12px 16px; box-shadow:var(--shadow-sm); animation:mfFadeUp .45s both; animation-delay:calc({{ $index }} * 70ms + 200ms);">
+            <span style="font:600 15px 'Geist Mono',monospace; color:var(--ink-subtle); width:28px; flex-shrink:0;">{{ r.rankLabel }}</span>
+            <div style="width:46px; height:60px; border-radius:8px; flex-shrink:0; background:{{ r.grad }}; position:relative; overflow:hidden;">
+              <svg viewBox="0 0 46 60" width="100%" height="100%"><circle cx="23" cy="23" r="10" fill="rgba(255,255,255,.5)"/><path d="M7 60c0-11 7-18 16-18s16 7 16 18z" fill="rgba(255,255,255,.5)"/></svg>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px;">
+                <span style="font-weight:600; font-size:15px;">Photo {{ r.n }}</span>
+                <span style="display:inline-flex; align-items:center; padding:2px 9px; border-radius:999px; font-size:11px; font-weight:600; background:{{ r.badgeBg }}; color:{{ r.badgeFg }};">{{ r.title }}</span>
+              </div>
+              <p style="margin:0; font-size:13px; color:var(--ink-subtle); text-wrap:pretty;">{{ r.note }}</p>
+            </div>
+            <div style="text-align:right; flex-shrink:0;">
+              <div style="font:600 17px 'Geist Mono',monospace; color:var(--ink);">{{ r.pct }}%</div>
+              <div style="font-size:11px; color:var(--ink-subtle); font-family:'Geist Mono',monospace;">{{ r.votes }} votes</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Top 3 -->
+    <section style="margin-bottom:40px; animation:mfFadeUp .5s both; animation-delay:180ms;">
+      <h2 style="font:600 22px 'IBM Plex Sans',sans-serif; margin:0 0 16px;">Your top three, explained</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;">
+        <sc-for list="{{ top3 }}" as="t" hint-placeholder-count="3">
+          <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; gap:14px;">
+            <div style="aspect-ratio:4/3; border-radius:12px; overflow:hidden; background:{{ t.grad }}; position:relative;">
+              <svg viewBox="0 0 200 150" width="100%" height="100%"><circle cx="100" cy="58" r="28" fill="rgba(255,255,255,.5)"/><path d="M40 150c0-30 27-48 60-48s60 18 60 48z" fill="rgba(255,255,255,.5)"/></svg>
+              <span style="position:absolute; top:10px; left:10px; padding:3px 10px; border-radius:999px; background:{{ t.badgeBg }}; color:{{ t.badgeFg }}; font:600 11px 'IBM Plex Sans',sans-serif;">{{ t.rankLabel }}</span>
+            </div>
+            <div>
+              <div style="font:600 14px 'IBM Plex Sans',sans-serif; color:var(--primary); margin-bottom:4px;">{{ t.placement }}</div>
+              <p style="margin:0; font-size:14px; color:var(--ink-muted); text-wrap:pretty;">{{ t.long }}</p>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Overall feedback -->
+    <section style="background:var(--surface-2); border-radius:20px; padding:clamp(22px,4vw,32px); margin-bottom:28px; animation:mfFadeUp .5s both; animation-delay:220ms;">
+      <h2 style="font:500 24px 'Outfit',sans-serif; margin:0 0 12px;">About your set overall</h2>
+      <p style="margin:0 0 14px; font-size:16px; color:var(--ink-muted); text-wrap:pretty;">Your photos read as warm and genuine, that’s a real strength. The audience responded most to images where your face is clearly lit and you look relaxed. A couple of shots are framed a little far away, so your expression gets lost; those work better deeper in a profile than as a first impression.</p>
+      <p style="margin:0; font-size:16px; color:var(--ink-muted); text-wrap:pretty;">Nothing here is a “bad” photo. It’s about order: lead with closeness and clear light, then let the rest add context.</p>
+    </section>
+
+    <!-- Recommendations -->
+    <section style="margin-bottom:44px; animation:mfFadeUp .5s both; animation-delay:260ms;">
+      <h2 style="font:600 22px 'IBM Plex Sans',sans-serif; margin:0 0 16px;">A few simple next steps</h2>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <sc-for list="{{ recommendations }}" as="rec" hint-placeholder-count="4">
+          <div style="display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow-sm);">
+            <span style="width:26px; height:26px; flex-shrink:0; border-radius:8px; background:var(--primary-soft); color:var(--primary); display:grid; place-items:center;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>
+            </span>
+            <p style="margin:0; font-size:15px; color:var(--ink); text-wrap:pretty;">{{ rec }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div style="display:flex; gap:12px; flex-wrap:wrap; animation:mfFadeUp .5s both; animation-delay:300ms;">
+      <button style="height:50px; padding:0 24px; border-radius:10px; border:none; background:var(--primary); color:var(--primary-fg); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer; box-shadow:var(--shadow-sm); display:inline-flex; align-items:center; gap:8px;" style-hover="background:var(--primary-hover)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+        Email me this report
+      </button>
+      <button onClick="{{ goDashboard }}" style="height:50px; padding:0 24px; border-radius:10px; border:1px solid var(--border-strong); background:transparent; color:var(--ink); font:600 16px 'IBM Plex Sans',sans-serif; cursor:pointer;" style-hover="background:var(--surface-2)">Back to dashboard</button>
+    </div>
+  </main>
+  </sc-if>
+
+  <!-- ============ ACCOUNT ============ -->
+  <sc-if value="{{ isAccount }}" hint-placeholder-val="{{ false }}">
+  <main style="max-width:680px; margin:0 auto; padding:40px 24px 110px; animation:mfFadeUp .45s both;">
+    <h1 style="font:500 34px 'Outfit',sans-serif; margin:0 0 28px;">Account</h1>
+
+    <section style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:var(--shadow-sm); margin-bottom:18px;">
+      <h2 style="font:600 17px 'IBM Plex Sans',sans-serif; margin:0 0 16px;">Profile</h2>
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border);"><span style="color:var(--ink-muted); font-size:14px;">Email</span><span style="font-size:15px;">ar.daneshvar@example.com</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;"><span style="color:var(--ink-muted); font-size:14px;">Appearance</span>
+        <button onClick="{{ toggleTheme }}" style="display:inline-flex; align-items:center; gap:8px; padding:7px 13px; border-radius:8px; border:1px solid var(--border-strong); background:var(--bg); color:var(--ink); font:600 13px 'IBM Plex Sans',sans-serif; cursor:pointer;">{{ themeLabel }}</button>
+      </div>
+    </section>
+
+    <section style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:var(--shadow-sm); margin-bottom:18px;">
+      <h2 style="font:600 17px 'IBM Plex Sans',sans-serif; margin:0 0 16px;">Payment history</h2>
+      <sc-for list="{{ payments }}" as="pay" hint-placeholder-count="3">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--border);">
+          <div><div style="font-size:15px; font-weight:500;">{{ pay.name }}</div><div style="font-size:12px; color:var(--ink-subtle); font-family:'Geist Mono',monospace;">{{ pay.date }}</div></div>
+          <span style="font:500 15px 'Geist Mono',monospace;">{{ pay.amount }}</span>
+        </div>
+      </sc-for>
+    </section>
+
+    <section style="background:var(--surface); border:1px solid var(--danger); border-radius:16px; padding:24px;">
+      <h2 style="font:600 17px 'IBM Plex Sans',sans-serif; margin:0 0 6px; color:var(--danger);">Delete account &amp; data</h2>
+      <p style="margin:0 0 16px; font-size:14px; color:var(--ink-muted); text-wrap:pretty;">This permanently removes your photos, reports, and account. We’ll ask you to confirm once more.</p>
+      <button style="height:44px; padding:0 18px; border-radius:10px; border:1px solid var(--danger); background:var(--danger-soft); color:var(--danger); font:600 14px 'IBM Plex Sans',sans-serif; cursor:pointer;" style-hover="opacity:.85">Delete everything</button>
+    </section>
+  </main>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const valid = ['landing','auth','dashboard','upload','payment','processing','report','account'];
+    const start = valid.includes(props.defaultScreen) ? props.defaultScreen : 'landing';
+    this.state = { screen: start, theme: props.defaultTheme === 'dark' ? 'dark' : 'light', authMode:'signup', audience:'w2534' };
+  }
+  componentDidMount(){
+    try { const t = localStorage.getItem('mf-theme'); if(t==='light'||t==='dark') this.setState({theme:t}); } catch(e){}
+  }
+  go(screen){ try{ window.scrollTo(0,0); }catch(e){} this.setState({ screen }); }
+  toggleTheme(){ this.setState(s=>{ const theme = s.theme==='light'?'dark':'light'; try{ localStorage.setItem('mf-theme', theme); }catch(e){} return { theme }; }); }
+
+  renderVals(){
+    const s = this.state;
+    const grads = [
+      'linear-gradient(155deg,#c9d2dc,#8a97a8)',
+      'linear-gradient(155deg,#d8cdc2,#a8978a)',
+      'linear-gradient(155deg,#cdd6ce,#94a89a)',
+      'linear-gradient(155deg,#d2c9d8,#a08aa8)',
+      'linear-gradient(155deg,#dcd3c9,#b8a890)',
+      'linear-gradient(155deg,#c9d8d6,#8aa8a4)'
+    ];
+    const badge = (tone)=>{
+      if(tone==='gold') return { badgeBg:'var(--spotlight-soft)', badgeFg:'var(--spotlight-fg)' };
+      if(tone==='primary') return { badgeBg:'var(--primary-soft)', badgeFg:'var(--primary)' };
+      return { badgeBg:'var(--surface-2)', badgeFg:'var(--ink-muted)' };
+    };
+    const rankingRaw = [
+      { n:3, tone:'gold',    title:'Best Main Profile Photo', votes:87, pct:87, grad:grads[0], note:'Natural light, genuine smile, eyes clearly visible, your strongest first impression.' },
+      { n:1, tone:'primary', title:'Strong Supporting Photo', votes:79, pct:79, grad:grads[3], note:'A clear, friendly shot that works beautifully as your second image.' },
+      { n:5, tone:'primary', title:'Strong Supporting Photo', votes:71, pct:71, grad:grads[5], note:'Good warmth and context; nice as a follow-up to your main photo.' },
+      { n:2, tone:'neutral', title:'Good In A Set',           votes:58, pct:58, grad:grads[1], note:'Reads better alongside others than carrying the profile alone.' },
+      { n:6, tone:'neutral', title:'Lower Priority',          votes:44, pct:44, grad:grads[4], note:'A softer option, a brighter, closer shot would lift it.' },
+      { n:4, tone:'neutral', title:'Better Later In Profile',  votes:31, pct:31, grad:grads[2], note:'Works as support; the face is a little small to lead with.' }
+    ];
+    const ranking = rankingRaw.map((r,i)=>({ ...r, ...badge(r.tone), rankLabel:'#'+(i+1) }));
+    const top3 = [
+      { ...ranking[0], placement:'Use as your main photo', long:'This is the one to open with. Clear light and an easy smile make people want to keep looking.' },
+      { ...ranking[1], placement:'Use as photo #2', long:'A natural follow-up, same warmth, a slightly different setting that adds a bit of story.' },
+      { ...ranking[2], placement:'Use as photo #3 or #4', long:'Good supporting energy; it rounds out the set without competing with your lead photo.' }
+    ];
+
+    const reportsRaw = [
+      { name:'Profile Refresh', date:'Jun 14, 2026', count:6, status:'completed', thumbs:[grads[0],grads[3],grads[5]] },
+      { name:'Summer Set',      date:'Jun 16, 2026', count:8, status:'processing', thumbs:[grads[1],grads[2],grads[4]] },
+      { name:'Quick Test',      date:'Jun 10, 2026', count:3, status:'failed',     thumbs:[grads[2],grads[0],grads[5]] }
+    ];
+    const statusMap = {
+      completed:{ label:'Completed', bg:'var(--primary-soft)', fg:'var(--primary)', dot:'var(--primary)', actionLabel:'View report', btnBg:'var(--primary)', btnFg:'var(--primary-fg)', btnBorder:'var(--primary)', action:()=>this.go('report') },
+      processing:{ label:'Processing', bg:'var(--surface-2)', fg:'var(--ink-muted)', dot:'var(--spotlight)', actionLabel:'View progress', btnBg:'transparent', btnFg:'var(--ink)', btnBorder:'var(--border-strong)', action:()=>this.go('processing') },
+      failed:{ label:'Needs retry', bg:'var(--danger-soft)', fg:'var(--danger)', dot:'var(--danger)', actionLabel:'Try again', btnBg:'transparent', btnFg:'var(--ink)', btnBorder:'var(--border-strong)', action:()=>this.go('upload') }
+    };
+    const reports = reportsRaw.map(r=>{ const m=statusMap[r.status]; return { ...r, statusLabel:m.label, badgeBg:m.bg, badgeFg:m.fg, dot:m.dot, actionLabel:m.actionLabel, action:m.action, btnBg:m.btnBg, btnFg:m.btnFg, btnBorder:m.btnBorder }; });
+
+    const uploadPhotos = [0,1,2,3].map(i=>({ grad:grads[i], label:'Photo '+(i+1) }));
+
+    const audienceDefs = [
+      { id:'w2129', label:'Women, 21-29' },
+      { id:'w2534', label:'Women, 25-34' },
+      { id:'w3039', label:'Women, 30-39' },
+      { id:'w3545', label:'Women, 35-45' }
+    ];
+    const audiences = audienceDefs.map(a=>{
+      const sel = a.id===s.audience;
+      return { ...a, select:()=>this.setState({audience:a.id}),
+        bg: sel?'var(--primary-soft)':'var(--surface)', fg: sel?'var(--primary)':'var(--ink-muted)', border: sel?'var(--primary)':'var(--border-strong)' };
+    });
+
+    const recommendations = [
+      'Lead with Photo 3, it’s your clearest, warmest shot.',
+      'Follow it with Photo 1, then Photo 5, to keep the energy consistent.',
+      'For your next set, try one more close-up in soft daylight.',
+      'Move the farther-away shots to the end; they read better as context.'
+    ];
+
+    const payments = [
+      { name:'Photo test · 6 photos', date:'Jun 14, 2026', amount:'$12.00' },
+      { name:'Photo test · 8 photos', date:'Jun 16, 2026', amount:'$12.00' },
+      { name:'Photo test · 3 photos', date:'Jun 10, 2026', amount:'$12.00' }
+    ];
+
+    const isApp = !['landing','auth'].includes(s.screen);
+    const dashActive = s.screen==='dashboard';
+
+    return {
+      themeClass: s.theme==='dark' ? 'mf-dark' : '',
+      isDark: s.theme==='dark',
+      isLight: s.theme!=='dark',
+      themeLabel: s.theme==='dark' ? 'Dark' : 'Light',
+      screen: s.screen,
+      showAppBar: isApp,
+      isLanding: s.screen==='landing',
+      isAuth: s.screen==='auth',
+      isDashboard: s.screen==='dashboard',
+      isUpload: s.screen==='upload',
+      isPayment: s.screen==='payment',
+      isProcessing: s.screen==='processing',
+      isReport: s.screen==='report',
+      isAccount: s.screen==='account',
+      navDashStyle: 'height:36px; padding:0 14px; border-radius:8px; border:none; background:'+(dashActive?'var(--surface-2)':'transparent')+'; color:'+(dashActive?'var(--ink)':'var(--ink-muted)')+"; font:600 14px 'IBM Plex Sans',sans-serif; cursor:pointer;",
+      // auth copy
+      authTitle: s.authMode==='login' ? 'Welcome back' : 'Create your account',
+      authSub: s.authMode==='login' ? 'Sign in to see your photo reports.' : 'Start your first photo test in minutes.',
+      authCta: s.authMode==='login' ? 'Sign in' : 'Create account',
+      authSwitchText: s.authMode==='login' ? 'New to MatchFrame?' : 'Already have an account?',
+      authSwitchCta: s.authMode==='login' ? 'Create one' : 'Sign in',
+      toggleAuth: ()=>this.setState(st=>({authMode: st.authMode==='login'?'signup':'login'})),
+      // data
+      steps: [
+        { num:'1', title:'Upload your photos', body:'Add 2-10 of your real photos. They stay private and are never shown to real people.' },
+        { num:'2', title:'Pick the women who vote', body:'Choose the age range of women you want to meet, we simulate an audience of women like them.' },
+        { num:'3', title:'Get your ranking', body:'See which photo to lead with, with a clear, kind reason for every placement.' }
+      ],
+      reports, ranking, top3, uploadPhotos, audiences, recommendations, payments,
+      uploadCount: 4,
+      // nav handlers
+      goLanding: ()=>this.go('landing'),
+      goSignup: ()=>{ this.setState({authMode:'signup'}); this.go('auth'); },
+      goLogin: ()=>{ this.setState({authMode:'login'}); this.go('auth'); },
+      goDashboard: ()=>this.go('dashboard'),
+      goUpload: ()=>this.go('upload'),
+      goPayment: ()=>this.go('payment'),
+      goProcessing: ()=>this.go('processing'),
+      goReport: ()=>this.go('report'),
+      goAccount: ()=>this.go('account'),
+      toggleTheme: ()=>this.toggleTheme()
+    };
+  }
+}
+</script>
+</body>
+</html>
