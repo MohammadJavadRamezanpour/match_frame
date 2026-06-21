@@ -1,66 +1,55 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
 
 const PROTECTED_PREFIXES = ['/dashboard', '/upload', '/payment', '/submitted', '/report', '/account'];
+const AUTH_PAGES = ['/signin', '/signup'];
 
-// Inline-resolved so the middleware (which runs on the Edge runtime) doesn't
-// import the throw-on-missing helpers — those would fail the build at first
-// boot before env vars are set in Vercel.
-function envPublic() {
-  return {
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
-    key:
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-      '',
-  };
+// Lightweight Edge-safe auth gate.
+//
+// We don't import `@supabase/ssr` here because it pulls in `@supabase/supabase-js`,
+// which uses Node-only globals (`__dirname`, `process.version`) that the Edge runtime
+// doesn't expose. Instead we look for the presence of the Supabase auth cookie —
+// the source of truth (token validity, refresh, RLS) is enforced by `requireUser()`
+// in server components and per-route auth checks in API handlers.
+function hasAuthCookie(request: NextRequest) {
+  for (const cookie of request.cookies.getAll()) {
+    if (cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token') && cookie.value) {
+      return true;
+    }
+  }
+  return false;
 }
 
-export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
-  const { url: supaUrl, key: supaKey } = envPublic();
-
-  const supabase = createServerClient(
-    supaUrl,
-    supaKey,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({ name, value, ...options });
-          response = NextResponse.next({ request });
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value: '', ...options });
-          response = NextResponse.next({ request });
-          response.cookies.set({ name, value: '', ...options });
-        },
-      },
-    },
-  );
-
-  const { data: { user } } = await supabase.auth.getUser();
+export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
+  const authed = hasAuthCookie(request);
 
-  if (!user && PROTECTED_PREFIXES.some((p) => path.startsWith(p))) {
+  if (!authed && PROTECTED_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`))) {
     const url = request.nextUrl.clone();
     url.pathname = '/signin';
     url.searchParams.set('next', path);
     return NextResponse.redirect(url);
   }
 
-  if (user && (path === '/signin' || path === '/signup')) {
+  if (authed && AUTH_PAGES.includes(path)) {
     const url = request.nextUrl.clone();
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);
   }
 
-  return response;
+  return NextResponse.next();
 }
 
+// Match only the routes where the gate is meaningful — skip API routes (they
+// auth themselves) and asset files.
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: [
+    '/dashboard/:path*',
+    '/upload/:path*',
+    '/payment/:path*',
+    '/submitted/:path*',
+    '/report/:path*',
+    '/account/:path*',
+    '/signin',
+    '/signup',
+  ],
 };
