@@ -11,8 +11,12 @@ const AUTH_PAGES = ['/signin', '/signup'];
 // the source of truth (token validity, refresh, RLS) is enforced by `requireUser()`
 // in server components and per-route auth checks in API handlers.
 function hasAuthCookie(request: NextRequest) {
+  // Supabase stores the auth token as either `sb-<ref>-auth-token` (single)
+  // or chunked across `sb-<ref>-auth-token.0`, `sb-<ref>-auth-token.1`, ...
+  // After OAuth the session is large and almost always chunked.
+  const AUTH_TOKEN_RE = /^sb-.+-auth-token(\.\d+)?$/;
   for (const cookie of request.cookies.getAll()) {
-    if (cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token') && cookie.value) {
+    if (AUTH_TOKEN_RE.test(cookie.name) && cookie.value) {
       return true;
     }
   }
