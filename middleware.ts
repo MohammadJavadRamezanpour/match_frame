@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 const PROTECTED_PREFIXES = ['/dashboard', '/upload', '/payment', '/submitted', '/report', '/account'];
+const PUBLIC_EXCEPTIONS = ['/report/sample'];
 const AUTH_PAGES = ['/signin', '/signup'];
 
 // Lightweight Edge-safe auth gate.
@@ -27,7 +28,11 @@ export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const authed = hasAuthCookie(request);
 
-  if (!authed && PROTECTED_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`))) {
+  const isProtected =
+    PROTECTED_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`)) &&
+    !PUBLIC_EXCEPTIONS.includes(path);
+
+  if (!authed && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = '/signin';
     url.searchParams.set('next', path);
