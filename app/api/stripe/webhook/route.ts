@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
+import { waitUntil } from '@vercel/functions';
 import { getStripe } from '@/lib/stripe';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { processTest } from '@/lib/process-test';
 import type Stripe from 'stripe';
 
 export const runtime = 'nodejs';
 // We need the raw body for signature verification — opt out of body parsing.
 export const dynamic = 'force-dynamic';
+// Allow the analysis pipeline (kept alive by waitUntil) up to 5 minutes.
+export const maxDuration = 300;
 
 export async function POST(request: Request) {
   const sig = request.headers.get('stripe-signature');
@@ -45,21 +49,14 @@ export async function POST(request: Request) {
         .eq('id', testId)
         .eq('status', 'pending_payment');
 
-      // Kick off processing immediately in a separate function invocation so the
-      // Stripe webhook can return quickly while the analysis runs (up to 5 min).
-      // Fire-and-forget: the inner invocation is independent — we don't await it.
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? '';
-      const cronSecret = process.env.CRON_SECRET;
-      if (!appUrl || !cronSecret) {
-        console.error('Cannot trigger processing: NEXT_PUBLIC_APP_URL or CRON_SECRET missing');
-      } else {
-        fetch(`${appUrl}/api/cron/process`, {
-          method: 'POST',
-          headers: { 'x-cron-secret': cronSecret, 'content-type': 'application/json' },
-          body: JSON.stringify({ testId }),
-          keepalive: true,
-        }).catch((err) => console.error('Failed to trigger processing', err));
-      }
+      // Run the analysis in the same invocation but after the Stripe response.
+      // waitUntil keeps the function alive (up to maxDuration) so processing
+      // continues even after we return 200.
+      waitUntil(
+        processTest(testId).catch((err) =>
+          console.error('processTest failed', err),
+        ),
+      );
     } else if (event.type === 'checkout.session.expired' || event.type === 'payment_intent.payment_failed') {
       const obj: any = event.data.object;
       if (obj?.metadata?.photo_test_id) {
