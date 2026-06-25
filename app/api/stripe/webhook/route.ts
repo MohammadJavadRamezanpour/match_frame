@@ -45,15 +45,20 @@ export async function POST(request: Request) {
         .eq('id', testId)
         .eq('status', 'pending_payment');
 
-      // Kick off processing (fire-and-forget; the cron route also picks up queued tests).
+      // Kick off processing immediately in a separate function invocation so the
+      // Stripe webhook can return quickly while the analysis runs (up to 5 min).
+      // Fire-and-forget: the inner invocation is independent — we don't await it.
       const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? '';
       const cronSecret = process.env.CRON_SECRET;
-      if (appUrl && cronSecret) {
+      if (!appUrl || !cronSecret) {
+        console.error('Cannot trigger processing: NEXT_PUBLIC_APP_URL or CRON_SECRET missing');
+      } else {
         fetch(`${appUrl}/api/cron/process`, {
           method: 'POST',
           headers: { 'x-cron-secret': cronSecret, 'content-type': 'application/json' },
           body: JSON.stringify({ testId }),
-        }).catch(() => {});
+          keepalive: true,
+        }).catch((err) => console.error('Failed to trigger processing', err));
       }
     } else if (event.type === 'checkout.session.expired' || event.type === 'payment_intent.payment_failed') {
       const obj: any = event.data.object;
